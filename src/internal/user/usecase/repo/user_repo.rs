@@ -3,7 +3,7 @@ use sqlx::Error;
 
 use crate::internal::user::entity::user::{
     convert_unix_to_date, UserChangePasswordRequest, UserCreateRequest, UserEmpty,
-    UserFromDb, UserGet, UserGetPassword, UserGetResponse, UserUpdateRequest
+    UserFromDb, UserGet, UserGetPassword, UserGetResponse, UserUpdateRequest,
 };
 use crate::internal::user::usecase::repo::repo::UserRepo;
 use crate::internal::user::usecase::traits::Repo;
@@ -18,12 +18,12 @@ impl Repo for UserRepo {
         return match query.fetch_one(&**self.db).await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(err) => {
                 Err(err)
             }
         };
-   }
+    }
 
     async fn user_get_password_by_id(&self, id: i32) -> Result<UserGetPassword, Error> {
         let sql = "SELECT password FROM tbl_user WHERE id=$1";
@@ -32,7 +32,7 @@ impl Repo for UserRepo {
         return match query.fetch_one(&**self.db).await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(err) => {
                 Err(err)
             }
@@ -52,7 +52,7 @@ impl Repo for UserRepo {
         return match query.fetch_one(&**self.db).await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(err) => {
                 Err(err)
             }
@@ -66,7 +66,7 @@ impl Repo for UserRepo {
         let res = match query.fetch_one(&**self.db).await {
             Ok(data) => {
                 Some(data)
-            },
+            }
             Err(_err) => {
                 None
             }
@@ -84,11 +84,11 @@ impl Repo for UserRepo {
                 };
 
                 Ok(data)
-            },
+            }
             None => {
                 Err(Error::RowNotFound)
             }
-        }
+        };
     }
 
     async fn user_get_by_username(&self, username: String) -> Result<UserGet, Error> {
@@ -98,7 +98,7 @@ impl Repo for UserRepo {
         return match query.fetch_one(&**self.db).await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(err) => {
                 Err(err)
             }
@@ -112,7 +112,7 @@ impl Repo for UserRepo {
         let users = match query.fetch_all(&**self.db).await {
             Ok(data) => {
                 Some(data)
-            },
+            }
             Err(_err) => {
                 None
             }
@@ -136,7 +136,7 @@ impl Repo for UserRepo {
                 }
 
                 Ok(users)
-            },
+            }
             None => {
                 Err(Error::RowNotFound)
             }
@@ -156,11 +156,11 @@ impl Repo for UserRepo {
         return match query.fetch_one(&**self.db).await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(err) => {
                 Err(err)
             }
-        }
+        };
     }
 
     async fn user_change_password(&self, req: UserChangePasswordRequest) -> Result<(), Error> {
@@ -174,10 +174,10 @@ impl Repo for UserRepo {
         return match query.fetch_one(&**self.db).await {
             Ok(_data) => {
                 Ok(())
-            },
+            }
             Err(err) => {
                 Err(err)
             }
-        }
+        };
     }
 }

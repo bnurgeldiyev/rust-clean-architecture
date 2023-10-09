@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::internal::user::entity::user::{
     convert_unix_to_date, UserAuthRequest, UserAuthResponse, UserChangePasswordRequest,
-    UserCreateRequest, UserGet, UserGetResponse, UserUpdateRequest, UserUpdateResponse
+    UserCreateRequest, UserGet, UserGetResponse, UserUpdateRequest, UserUpdateResponse,
 };
 
 use crate::internal::user::usecase::traits::{Repo, UseCase, UserUseCase};
@@ -15,7 +15,6 @@ use crate::internal::controller::response::ErrorResponseUseCase;
 #[async_trait]
 impl UseCase for UserUseCase {
     async fn user_auth(&self, user: UserAuthRequest) -> Result<UserAuthResponse, ErrorResponseUseCase> {
-
         let user_by_username: Option<UserGet> = match self.repo.user_get_by_username(user.username.clone()).await {
             Ok(res) => {
                 Some(res)
@@ -23,7 +22,7 @@ impl UseCase for UserUseCase {
 
             Err(err) => {
                 if err.to_string() != sqlx::Error::RowNotFound.to_string() {
-                    let res = ErrorResponseUseCase{
+                    let res = ErrorResponseUseCase {
                         error_msg: "Error in repo.user_get_by_username".to_string(),
                         status_code: StatusCode::INTERNAL_SERVER_ERROR,
                     };
@@ -40,9 +39,9 @@ impl UseCase for UserUseCase {
                 let password_by_username = match self.repo.user_get_password_by_username(user.username.clone()).await {
                     Ok(data) => {
                         data
-                    },
+                    }
                     Err(_err) => {
-                        let res = ErrorResponseUseCase{
+                        let res = ErrorResponseUseCase {
                             error_msg: "Error in repo.user_get_password_by_username".to_string(),
                             status_code: StatusCode::INTERNAL_SERVER_ERROR,
                         };
@@ -52,28 +51,28 @@ impl UseCase for UserUseCase {
                 };
 
                 let valid = verify(user.password.clone(), &password_by_username.password).unwrap();
-                
+
                 if valid {
                     let access_token = token::generate_access_token(&user.username);
                     let refresh_token = Uuid::new_v4().to_string();
 
                     let res: UserAuthResponse = UserAuthResponse {
                         access_token,
-                        refresh_token
+                        refresh_token,
                     };
-                    
+
                     Ok(res)
                 } else {
-                    let res = ErrorResponseUseCase{
-                        error_msg: "Unauthorized".to_string() ,
+                    let res = ErrorResponseUseCase {
+                        error_msg: "Unauthorized".to_string(),
                         status_code: StatusCode::UNAUTHORIZED,
                     };
 
                     Err(res)
                 }
-            },
+            }
             None => {
-                let res = ErrorResponseUseCase{
+                let res = ErrorResponseUseCase {
                     error_msg: "Unauthorized".to_string(),
                     status_code: StatusCode::UNAUTHORIZED,
                 };
@@ -84,7 +83,6 @@ impl UseCase for UserUseCase {
     }
 
     async fn user_create(&self, mut user: UserCreateRequest) -> Result<UserGet, ErrorResponseUseCase> {
-
         let user_by_username: Option<UserGet> = match self.repo.user_get_by_username(user.username.clone()).await {
             Ok(res) => {
                 Some(res)
@@ -112,7 +110,7 @@ impl UseCase for UserUseCase {
                 };
 
                 Err(data)
-            },
+            }
             None => {
                 let hashed = hash(user.password.clone(), 12).unwrap();
                 user.password = hashed;
@@ -120,7 +118,7 @@ impl UseCase for UserUseCase {
                 let res = match self.repo.user_create(user).await {
                     Ok(data) => {
                         data
-                    },
+                    }
                     Err(_err) => {
                         let data = ErrorResponseUseCase {
                             status_code: StatusCode::INTERNAL_SERVER_ERROR,
@@ -140,9 +138,8 @@ impl UseCase for UserUseCase {
         match self.repo.user_get_by_id(id).await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(err) => {
-
                 if err.to_string() == sqlx::Error::RowNotFound.to_string() {
                     let res = ErrorResponseUseCase {
                         status_code: StatusCode::NOT_FOUND,
@@ -165,9 +162,9 @@ impl UseCase for UserUseCase {
         match self.repo.user_get_by_username(username.clone()).await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(err) => {
-                let mut data = ErrorResponseUseCase{
+                let mut data = ErrorResponseUseCase {
                     status_code: StatusCode::INTERNAL_SERVER_ERROR,
                     error_msg: "Internal server error".to_string(),
                 };
@@ -187,9 +184,9 @@ impl UseCase for UserUseCase {
         match self.repo.user_list().await {
             Ok(data) => {
                 Ok(data)
-            },
+            }
             Err(_err) => {
-                let res = ErrorResponseUseCase{
+                let res = ErrorResponseUseCase {
                     error_msg: "Internal server error".to_string(),
                     status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 };
@@ -200,11 +197,10 @@ impl UseCase for UserUseCase {
     }
 
     async fn user_update_by_id(&self, user: UserUpdateRequest) -> Result<UserUpdateResponse, ErrorResponseUseCase> {
-
         let user_by_id = match self.repo.user_get_by_id(user.id).await {
             Ok(res) => {
                 Some(res)
-            },
+            }
             Err(_err) => {
                 None
             }
@@ -212,10 +208,8 @@ impl UseCase for UserUseCase {
 
         match user_by_id {
             Some(_res) => {
-
                 match self.repo.user_update_by_id(user).await {
                     Ok(res) => {
-
                         let response = UserUpdateResponse {
                             id: res.id,
                             username: res.username,
@@ -226,19 +220,17 @@ impl UseCase for UserUseCase {
                         };
 
                         Ok(response)
-                    },
+                    }
                     Err(_err) => {
-
                         let data = ErrorResponseUseCase {
                             status_code: StatusCode::INTERNAL_SERVER_ERROR,
                             error_msg: "Internal server error".to_string(),
                         };
 
-                        return Err(data)
+                        return Err(data);
                     }
                 }
-
-            },
+            }
             None => {
                 let data = ErrorResponseUseCase {
                     status_code: StatusCode::NOT_FOUND,
@@ -251,11 +243,10 @@ impl UseCase for UserUseCase {
     }
 
     async fn user_change_password(&self, mut user: UserChangePasswordRequest) -> Result<(), ErrorResponseUseCase> {
-
         let password_by_id = match self.repo.user_get_password_by_id(user.id).await {
             Ok(data) => {
                 Some(data)
-            },
+            }
             Err(_err) => {
                 None
             }
@@ -266,7 +257,7 @@ impl UseCase for UserUseCase {
                 let valid = match verify(user.old_password.clone(), &data.password) {
                     Ok(_data) => {
                         true
-                    },
+                    }
                     Err(_err) => {
                         false
                     }
@@ -279,7 +270,7 @@ impl UseCase for UserUseCase {
                     return match self.repo.user_change_password(user).await {
                         Ok(_) => {
                             Ok(())
-                        },
+                        }
                         Err(_err) => {
                             let data = ErrorResponseUseCase {
                                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
@@ -288,8 +279,7 @@ impl UseCase for UserUseCase {
 
                             Err(data)
                         }
-                    }
-
+                    };
                 } else {
                     let data = ErrorResponseUseCase {
                         status_code: StatusCode::BAD_REQUEST,
@@ -298,8 +288,7 @@ impl UseCase for UserUseCase {
 
                     Err(data)
                 }
-
-            },
+            }
             None => {
                 let data = ErrorResponseUseCase {
                     status_code: StatusCode::NOT_FOUND,

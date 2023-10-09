@@ -2,7 +2,7 @@
 mod tests {
     use crate::internal::user::entity::user::{
         UserAuthRequest, UserCreateRequest,
-        verify_user_auth_request, verify_user_create_request
+        verify_user_auth_request, verify_user_create_request,
     };
 
     struct TestCase<T, A> {
@@ -50,7 +50,7 @@ mod tests {
                     username: String::from("JamesHolland"),
                     password: String::from("james123"),
                     firstname: String::from("James"),
-                    lastname: String::from("Holland")
+                    lastname: String::from("Holland"),
                 },
                 output: Ok(()),
             },
@@ -59,7 +59,7 @@ mod tests {
                     username: String::from(""),
                     password: String::from("james123"),
                     firstname: String::from("James"),
-                    lastname: String::from("Holland")
+                    lastname: String::from("Holland"),
                 },
                 output: Err("invalid username".to_string()),
             },
@@ -68,7 +68,7 @@ mod tests {
                     username: String::from("JamesHolland"),
                     password: String::from(""),
                     firstname: String::from("James"),
-                    lastname: String::from("Holland")
+                    lastname: String::from("Holland"),
                 },
                 output: Err("invalid password".to_string()),
             },
@@ -77,7 +77,7 @@ mod tests {
                     username: String::from("JamesHolland"),
                     password: String::from("james123"),
                     firstname: String::from(""),
-                    lastname: String::from("Holland")
+                    lastname: String::from("Holland"),
                 },
                 output: Err("firstname is empty".to_string()),
             },
@@ -86,7 +86,7 @@ mod tests {
                     username: String::from("JamesHolland"),
                     password: String::from("james123"),
                     firstname: String::from("James"),
-                    lastname: String::from("")
+                    lastname: String::from(""),
                 },
                 output: Err("lastname is empty".to_string()),
             },

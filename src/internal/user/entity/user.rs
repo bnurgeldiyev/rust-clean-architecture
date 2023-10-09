@@ -30,7 +30,7 @@ pub struct UserGet {
 
 #[derive(sqlx::FromRow, Serialize, Deserialize, Debug, Clone)]
 pub struct UserGetPassword {
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -57,7 +57,7 @@ pub struct UserFromDb {
 
 #[derive(sqlx::FromRow)]
 pub struct UserEmpty {
-    pub id: i32
+    pub id: i32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -75,7 +75,7 @@ pub struct UserUpdateRequest {
     pub id: i32,
     pub username: String,
     pub firstname: String,
-    pub lastname: String
+    pub lastname: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

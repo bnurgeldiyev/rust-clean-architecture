@@ -16,7 +16,7 @@ mod pkg;
 
 #[derive(Clone)]
 pub struct UseCases {
-    user_use_case: UserUseCase
+    user_use_case: UserUseCase,
 }
 
 #[actix_web::main]
@@ -26,7 +26,7 @@ async fn main() -> io::Result<()> {
     let db = match connection::new_pg_connection(&cfg).await {
         Ok(database) => {
             database
-        },
+        }
         Err(err) => {
             panic!("Error in new_pg_connection: {}", err)
         }

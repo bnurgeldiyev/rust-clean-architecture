@@ -12,7 +12,6 @@ pub fn get_time_sec() -> u64 {
 }
 
 pub fn generate_access_token(username: &String) -> String {
-
     let key: Hmac<Sha256> = Hmac::new_from_slice(TOKEN_SECRET_KEY.as_ref()).unwrap();
     let mut claims = BTreeMap::new();
     let start = get_time_sec() + (TOKEN_LIFE_TIME * 60);
